@@ -7,6 +7,13 @@
    
    todo:
 
-   - 添加loading
+   - ~~添加loading~~
+
+   - 下拉刷新
 
    - 添加点击跳转
+
+   - 状态保持，切换tab,无需重新加载数据  AutomaticKeepAliveClientMixin  
+
+3. step3 构建推荐mock Model,布局推荐和关注页面。
+

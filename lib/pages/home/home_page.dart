@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_zhihu/pages/home/home_follow_listview.dart';
 import 'package:flutter_zhihu/pages/home/home_hotrank_listview.dart';
-import 'package:flutter_zhihu/pages/home/home_recement_listview.dart';
-import 'package:flutter_zhihu/pages/home/home_video_listview.dart';
+import 'package:flutter_zhihu/pages/home/home_recommend_listview.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, initialIndex: 1, length: 4);
+    _tabController = new TabController(vsync: this, initialIndex: 1, length: 3);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-
   }
 
   @override
@@ -33,19 +33,20 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         elevation: 0,
         bottom: new TabBar(
           controller: _tabController,
-          indicatorColor: Colors.black,
+          indicatorColor: Colors.black, 
+          indicatorSize: TabBarIndicatorSize.label, 
+          labelStyle: TextStyle(
+            fontSize: ScreenUtil().setSp(26)
+          ),       
           tabs: <Widget>[
-            new Tab(
-              text: '关注',
-            ),
             new Tab(
               text: '推荐',
             ),
             new Tab(
-              text: '热榜',
+              text: '关注',
             ),
             new Tab(
-              text: '视频',
+              text: '热榜',
             ),
           ],
         ),
@@ -53,10 +54,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       body: new TabBarView(
         controller: _tabController,
         children: <Widget>[
-          HomeFollowListView(),
-          HomeRecementListView(),
+          HomeRecommendListView(),
+          HomeRecommendListView(),
+          // HomeFollowListView(),
           HomeHotRankListView(),
-          HomeVideoListView()
         ],
       ),
     );

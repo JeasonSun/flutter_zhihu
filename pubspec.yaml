@@ -13,6 +13,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   dio:
+  flutter_screenutil:
 
 dev_dependencies:
   flutter_test:

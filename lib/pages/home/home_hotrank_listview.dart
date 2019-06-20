@@ -1,41 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_zhihu/config/globalConstant.dart';
 import 'package:flutter_zhihu/dao/home_dao.dart';
 import 'package:flutter_zhihu/model/home_hotrank_model.dart';
 import 'package:flutter_zhihu/util/util.dart';
+import 'package:flutter_zhihu/widget/loading_container.dart';
 
 class HomeHotRankListView extends StatefulWidget {
   @override
   _HomeHotRankListViewState createState() => _HomeHotRankListViewState();
 }
 
-class _HomeHotRankListViewState extends State<HomeHotRankListView> {
+class _HomeHotRankListViewState extends State<HomeHotRankListView>
+    with AutomaticKeepAliveClientMixin {
   HomeHotRankListModel ranklist;
+  bool _loading = true;
 
   @override
   void initState() {
-    super.initState();
     _getData();
+    super.initState();
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: ranklist?.data?.length ?? 0,
-      itemBuilder: (BuildContext context, int position) {
-        return _item(position);
-      },
+    super.build(context);
+    return Scaffold(
+      body: LoadingContainer(
+        isLoading: _loading,
+        cover: true,
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          child: ListView.builder(
+            itemCount: ranklist?.data?.length ?? 0,
+            itemBuilder: (BuildContext context, int position) {
+              return _item(position);
+            },
+          ),
+        ),
+      ),
     );
   }
 
   void _getData() async {
+    if (this.mounted) {
+      setState(() {
+        _loading = true;
+      });
+    }
+
     try {
       HomeHotRankListModel ranklistmodel = await HomeHotrankDao.fetch();
-      setState(() {
-        ranklist = ranklistmodel;
-      });
+      if (this.mounted) {
+        setState(() {
+          ranklist = ranklistmodel;
+          _loading = false;
+        });
+      }
     } catch (e) {
       print(e);
+      if (this.mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
+  }
+
+  Future<Null> _handleRefresh() async {
+    _getData();
+    return null;
   }
 
   Widget _item(int position) {
@@ -49,7 +85,7 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
         decoration: BoxDecoration(
             color: Colors.white,
             border: BorderDirectional(
-                bottom: BorderSide(color: Colors.black12, width: 1.0))),
+                bottom: BorderSide(color: Colors.black12, width: 0.3))),
         child: FlatButton(
           onPressed: () {},
           child: Container(
@@ -69,7 +105,7 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
                                   ? hexToColor("#de4f45")
                                   : hexToColor("#c1ab7a"),
                               fontWeight: FontWeight.bold,
-                              fontSize: 16.0),
+                              fontSize: GlobalConstant.fontSize26),
                         ),
                         alignment: Alignment.topLeft,
                       )
@@ -87,7 +123,7 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
                             item?.target?.title?.text ?? '',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
+                                fontSize: GlobalConstant.fontSize30,
                                 color: Colors.black),
                           ),
                           padding: EdgeInsets.only(
@@ -100,7 +136,7 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
                             ? Container(
                                 child: Text(
                                   item?.target?.excerpt?.text,
-                                  style: TextStyle(fontSize: 14.0),
+                                  style: TextStyle(fontSize: GlobalConstant.fontSize26),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -110,7 +146,7 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
                         Container(
                           child: Text(
                             item?.target?.metrics?.text ?? '',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(color: Colors.grey, fontSize: GlobalConstant.fontSize24),
                           ),
                           alignment: Alignment.topLeft,
                         )
@@ -130,7 +166,6 @@ class _HomeHotRankListViewState extends State<HomeHotRankListView> {
                                       image: NetworkImage(
                                           item?.target?.image?.url),
                                       fit: BoxFit.cover
-                                      // centerSlice: Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                                       ),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(6.0))),
